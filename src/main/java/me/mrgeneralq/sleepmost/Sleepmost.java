@@ -41,8 +41,8 @@ public class Sleepmost extends JavaPlugin {
 		saveDefaultConfig();
 
 		//init metrics
-		//final int bStatsID = 6212;
-		//new Metrics(this, bStatsID);
+		final int bStatsID = 6212;
+		new Metrics(this, bStatsID);
 
 		//load the messages at start
 		MessageMapper.getMapper().loadMessages();
