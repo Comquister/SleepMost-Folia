@@ -17,6 +17,7 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import com.tcoded.folialib.FoliaLib;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -98,9 +99,8 @@ public class PlayerSleepStateChangeEventListener implements Listener {
 
         if (this.sleepService.getSleepersAmount(world) < this.sleepService.getRequiredSleepersCount(world))
             return;
-
-        Bukkit.getScheduler().runTaskLater(sleepmost, () ->
-        {
+        FoliaLib foliaLib = new FoliaLib(sleepmost);
+        foliaLib.getScheduler().runAtLocationLater(player.getLocation(), task -> {
 
             SleepMostWorld sleepMostWorld = this.sleepMostWorldService.getWorld(world);
 
@@ -120,7 +120,11 @@ public class PlayerSleepStateChangeEventListener implements Listener {
 
             //retrieve a list of all players currently asleep and send them to the SleepSkipEvent (in service)
             List<OfflinePlayer> peopleWhoSlept = this.sleepService.getSleepers(world).stream().map(p -> Bukkit.getOfflinePlayer(p.getUniqueId())).collect(Collectors.toList());
-            this.sleepService.executeSleepReset(world, player.getName(), player.getDisplayName(), peopleWhoSlept, skipCause);
+            //this.sleepService.executeSleepReset(world, player.getName(), player.getDisplayName(), peopleWhoSlept, skipCause);
+            foliaLib.getScheduler().runNextTick(task1 -> {
+                this.sleepService.executeSleepReset(world, player.getName(), player.getDisplayName(), peopleWhoSlept, skipCause);
+            });
+
         }, skipDelay * 20L);
 
     }

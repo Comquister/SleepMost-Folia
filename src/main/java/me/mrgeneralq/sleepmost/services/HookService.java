@@ -41,7 +41,7 @@ public class HookService implements IHookService {
     public Optional<Hook> getHook(SleepMostHook sleepMostHook) {
 
         Optional<Hook> hook = Optional.ofNullable(this.hookRepository.get(sleepMostHook));
-        if(hook.isEmpty()){
+        if(!hook.isPresent()){
             return Optional.empty();
         }
 

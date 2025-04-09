@@ -20,6 +20,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import com.tcoded.folialib.FoliaLib;
 
 import me.mrgeneralq.sleepmost.commands.SleepmostCommand;
 import me.mrgeneralq.sleepmost.statics.Bootstrapper;
@@ -34,13 +35,14 @@ public class Sleepmost extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		FoliaLib foliaLib = new FoliaLib(this);
 
 		instance = this;
 		saveDefaultConfig();
 
 		//init metrics
-		final int bStatsID = 6212;
-		new Metrics(this, bStatsID);
+		//final int bStatsID = 6212;
+		//new Metrics(this, bStatsID);
 
 		//load the messages at start
 		MessageMapper.getMapper().loadMessages();
@@ -98,9 +100,9 @@ public class Sleepmost extends JavaPlugin {
 			new PapiExtension(this, bootstrapper.getFlagsRepository(), bootstrapper.getSleepService()).register();
 		}
 
-		Bukkit.getScheduler().runTaskAsynchronously(this, () -> notifyIfNewUpdateExists(bootstrapper.getUpdateService()));
+		foliaLib.getScheduler().runAsync(task -> notifyIfNewUpdateExists(bootstrapper.getUpdateService()));
 		runPlayerTasks();
-		runPreTimerTasks();
+		foliaLib.getScheduler().runNextTick(task -> runPreTimerTasks());
 		runTimers(bootstrapper.getSleepService(), bootstrapper.getSleepMostWorldService(), bootstrapper.getInsomniaService());
 
 	}
@@ -127,9 +129,14 @@ public class Sleepmost extends JavaPlugin {
 		}
 	}
 
-	private void runTimers(ISleepService sleepService, ISleepMostWorldService sleepMostWorldService, IInsomniaService insomniaService){
-		new Heartbeat(sleepService, sleepMostWorldService, insomniaService, bootstrapper.getFlagsRepository()).runTaskTimer(this, 20,20);
+	private void runTimers(ISleepService sleepService, ISleepMostWorldService sleepMostWorldService, IInsomniaService insomniaService) {
+		FoliaLib foliaLib = new FoliaLib(this); // Padrão FoliaLib
+		Runnable task = new Heartbeat(sleepService, sleepMostWorldService, insomniaService, bootstrapper.getFlagsRepository());
+
+		foliaLib.getScheduler().runTimer(task, 20L, 20L); // scheduler compatível com Folia
 	}
+
+
 
 	private void notifyIfNewUpdateExists(IUpdateService updateService) 
 	{

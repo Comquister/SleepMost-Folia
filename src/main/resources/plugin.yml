@@ -1,8 +1,9 @@
 name: sleep-most
 api-version: 1.13
-version: ${project.version}
+version: "5.7"
 main: me.mrgeneralq.sleepmost.Sleepmost
 authors: [MrGeneralQ, LesleyXYZ, HorrendousEntity]
+folia-supported: true
 commands:
   sleepmost:
     usage: /sleepmost

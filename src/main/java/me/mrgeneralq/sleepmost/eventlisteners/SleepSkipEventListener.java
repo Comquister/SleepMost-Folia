@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
+import com.tcoded.folialib.FoliaLib;
 
 import me.mrgeneralq.sleepmost.enums.SleepSkipCause;
 import me.mrgeneralq.sleepmost.events.SleepSkipEvent;
@@ -30,7 +31,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class SleepSkipEventListener implements Listener {
-
+    private final FoliaLib foliaLib = new FoliaLib(Sleepmost.getInstance());
     private final IMessageService messageService;
     private final IConfigService configService;
     private final ISleepService sleepService;
@@ -46,7 +47,6 @@ public class SleepSkipEventListener implements Listener {
                                   IBossBarService bossBarService,
                                   IHookService hooksService
     ) {
-
         this.messageService = messageService;
         this.configService = configService;
         this.sleepService = sleepService;
@@ -82,13 +82,11 @@ public class SleepSkipEventListener implements Listener {
         sendSkipSound(world, e);
 
         if (ServerVersion.CURRENT_VERSION.supportsTitles()) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    sendSkipTitle(world, e);
-                }
-            }.runTaskLater(Sleepmost.getInstance(), 5);
+            foliaLib.getScheduler().runLater(() -> {
+                sendSkipTitle(world, e);
+            }, 5);
         }
+
         
         boolean shouldHeal = flagsRepository.getHealFlag().getValueAt(world);
         boolean shouldFeed = flagsRepository.getFeedFlag().getValueAt(world);

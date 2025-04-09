@@ -65,7 +65,7 @@ public class ConfigRepository implements IConfigRepository
         main.getConfig().set(getFlagValuePath("prevent-phantom", worldName), false);
         main.getConfig().set(getFlagValuePath("nightcycle-animation", worldName), false);
         main.getConfig().set(getFlagValuePath("storm-sleep", worldName), false);
-        main.getConfig().set(getFlagValuePath("skip-delay", worldName), 0);
+        main.getConfig().set(getFlagValuePath("skip-delay", worldName), 1);
         main.getConfig().set(getFlagValuePath("heal", worldName), false);
         main.getConfig().set(getFlagValuePath("feed", worldName), false);
         main.saveConfig();

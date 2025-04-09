@@ -1,5 +1,6 @@
 package me.mrgeneralq.sleepmost.services;
 
+import com.tcoded.folialib.FoliaLib;
 import de.myzelyam.api.vanish.VanishAPI;
 import me.clip.placeholderapi.PlaceholderAPI;
 import me.mrgeneralq.sleepmost.Sleepmost;
@@ -30,6 +31,7 @@ import java.util.stream.Stream;
 public class SleepService implements ISleepService {
 
     private final Sleepmost main;
+    private final FoliaLib foliaLib = new FoliaLib(Sleepmost.getInstance());
     private final IConfigRepository configRepository;
     private final IConfigService configService;
     private final IFlagsRepository flagsRepository;
@@ -317,8 +319,13 @@ public class SleepService implements ISleepService {
 
         SleepMostWorld sleepMostWorld = this.sleepMostWorldService.getWorld(world);
         sleepMostWorld.setTimeCycleAnimationIsRunning(true);
+        NightcycleAnimationTask task = new NightcycleAnimationTask(this, flagsRepository, world, player, sleepingPlayers, sleepSkipCause, sleepMostWorldService, messageService, configService);
+        foliaLib.getScheduler().runTimer(() -> {
+            if (!task.isCancelled()) {
+                task.tick();
+            }
+        }, 0, 1);
 
-        new NightcycleAnimationTask(this, this.flagsRepository, world, player, sleepingPlayers , sleepSkipCause, sleepMostWorldService, messageService, configService).runTaskTimer(this.main, 0, 1);
     }
 
 
